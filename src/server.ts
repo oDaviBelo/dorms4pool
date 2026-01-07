@@ -1,11 +1,13 @@
 import express from "express";
 import { mainRouters } from "./routes/main";
 import { authRoutes } from "./routes/auth";
+import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
 import cors from "cors";
 
 const server = express();
 server.use(cors());
+server.use(cookieParser());
 server.use(bodyParser.urlencoded({ extended: true }));
 server.use(bodyParser.json());
 
