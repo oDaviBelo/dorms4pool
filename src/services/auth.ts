@@ -28,6 +28,7 @@ type LoginUserProps = {
 
 export const loginUser = async (data: LoginUserProps) => {
   data.email = data.email.toLowerCase();
+  console.log("email no services:", data.email);
   const exists = await prisma.user.findFirst({
     where: {
       email: data.email,
@@ -37,7 +38,11 @@ export const loginUser = async (data: LoginUserProps) => {
     return false;
   }
   return await prisma.user.findFirst({
-    where: { email: data.email, password: data.password },
+    where: { email: data.email },
+    select: {
+      email: true,
+      password: true,
+    },
   });
 };
 

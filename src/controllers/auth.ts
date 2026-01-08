@@ -3,6 +3,7 @@ import { z } from "zod";
 import { createUser, loginUser } from "../services/auth";
 import { generateToken } from "../libs/jwt";
 import { ExtendedRequest } from "../types/extended-request";
+import bcrypt from "bcrypt";
 export const signup: RequestHandler = async (req, res) => {
   const schema = z.object({
     name: z.string(),
@@ -14,16 +15,17 @@ export const signup: RequestHandler = async (req, res) => {
     res.json({ error: data.error.flatten().fieldErrors });
     return;
   }
+  const saltRounds = 10;
+  const hashedPassword = await bcrypt.hash(data.data.password, saltRounds);
+  console.log("newpass: ", hashedPassword);
+  data.data.password = hashedPassword;
   const newUser = await createUser(data.data);
 
   if (!newUser) {
     res.json({ err: "Erro services" });
     return;
   }
-  const payload = {
-    email: newUser.email,
-    password: newUser.password,
-  };
+
   const token = await generateToken(data.data.email);
 
   res.json({
@@ -48,10 +50,17 @@ export const login: RequestHandler = async (req, res) => {
     return;
   }
   const userData = await loginUser(data.data);
-
+  console.log(userData);
   if (!userData) {
-    res.json({ err: "Credenciais Inválidas" });
+    res.status(401).json({ err: "Credenciais Inválidas" });
     return;
+  }
+  const verifyPass = await bcrypt.compare(
+    data.data.password,
+    userData.password
+  );
+  if (!verifyPass) {
+    return res.status(401).json({ err: "nao autorizado, senha errada " });
   }
   const token = await generateToken(data.data.email);
   res.cookie("token", token, {
@@ -64,6 +73,7 @@ export const login: RequestHandler = async (req, res) => {
       email: userData.email,
       password: userData.password,
     },
+    token,
   });
 };
 
