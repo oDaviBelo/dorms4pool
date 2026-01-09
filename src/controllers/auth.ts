@@ -26,7 +26,13 @@ export const signup: RequestHandler = async (req, res) => {
     return;
   }
 
-  const token = await generateToken(data.data.email);
+  const tokenData = {
+    email: newUser.email,
+    id: newUser.id,
+    name: newUser.name,
+  };
+
+  const token = await generateToken(tokenData);
 
   res.json({
     user: {
@@ -62,7 +68,12 @@ export const login: RequestHandler = async (req, res) => {
   if (!verifyPass) {
     return res.status(401).json({ err: "nao autorizado, senha errada " });
   }
-  const token = await generateToken(data.data.email);
+  const tokenData = {
+    email: userData.email,
+    id: userData.id,
+  };
+
+  const token = await generateToken(tokenData);
   res.cookie("token", token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",

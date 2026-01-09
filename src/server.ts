@@ -4,6 +4,7 @@ import { authRoutes } from "./routes/auth";
 import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
 import cors from "cors";
+import { MatchesRoutes } from "./routes/matches";
 
 const server = express();
 server.use(cors());
@@ -14,6 +15,7 @@ server.use(bodyParser.json());
 server.use(express.static("public"));
 server.use("/api", mainRouters);
 server.use("/api/auth", authRoutes);
+server.use("/api/match/", MatchesRoutes);
 
 server.listen(4444, () => {
   console.log("servidor rodando na 4444 ");

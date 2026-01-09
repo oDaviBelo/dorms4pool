@@ -42,6 +42,7 @@ export const loginUser = async (data: LoginUserProps) => {
     select: {
       email: true,
       password: true,
+      id: true,
     },
   });
 };
