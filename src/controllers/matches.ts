@@ -3,6 +3,7 @@ import {
   getIntoMatchData,
   getMatchHash,
   isInTheMatch,
+  setResult,
 } from "../services/matches";
 import { id } from "zod/locales";
 import { Request, RequestHandler, Response } from "express";
@@ -98,5 +99,34 @@ export const getIntoMatch: RequestHandler = async (
     data: addPlayer,
     player1Data: Player1Data,
     Player2Data: Player2Data,
+  });
+};
+
+export const setWinner: RequestHandler = async (req, res) => {
+  const schema = z.object({
+    winner: z.number(),
+    second: z.number(),
+    hash: z.string(),
+  });
+
+  const data = schema.safeParse(req.body);
+  if (!data.success) {
+    res.json({ err: "deu pau" });
+    return;
+  }
+  const resultData = {
+    winner: data.data.winner,
+    second: data.data.second,
+    hash: parseInt(data.data.hash),
+  };
+  const setFinal = await setResult(resultData);
+
+  if (!setFinal) {
+    res.json({ err: "nao rolou setar" });
+    return;
+  }
+
+  res.json({
+    data: setFinal,
   });
 };

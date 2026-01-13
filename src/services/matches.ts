@@ -1,3 +1,4 @@
+import { number } from "zod";
 import { prisma } from "../libs/prisma";
 
 export const getMatchHash = async () => {
@@ -40,5 +41,24 @@ export const getIntoMatchData = async (data: GetIntoMatchProps) => {
 export const isInTheMatch = async (id: number) => {
   return await prisma.match.findFirst({
     where: { OR: [{ player1: id }, { player2: id }] },
+  });
+};
+
+type setResultProps = {
+  winner: number;
+  second: number;
+  hash: number;
+};
+export const setResult = async (data: setResultProps) => {
+  return await prisma.match.update({
+    where: { id: data.hash },
+    data: {
+      winnerId: data.winner,
+      loserId: data.second,
+    },
+    select: {
+      winnerId: true,
+      loserId: true,
+    },
   });
 };

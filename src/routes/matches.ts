@@ -4,4 +4,5 @@ import * as MatchController from "../controllers/matches";
 export const MatchesRoutes = Router();
 
 MatchesRoutes.post("/create", privateRoute, MatchController.createMatch);
-MatchesRoutes.post("/enter", privateRoute, MatchController.getIntoMatch);
+MatchesRoutes.put("/enter", privateRoute, MatchController.getIntoMatch);
+MatchesRoutes.put("/setWinner", privateRoute, MatchController.setWinner);
