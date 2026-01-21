@@ -15,7 +15,7 @@ import { getUserById } from "../services/user";
 
 export const createMatch: RequestHandler = async (
   req: ExtendedRequest,
-  res
+  res,
 ) => {
   const user = await req.headers.authorization;
   if (!user) {
@@ -53,7 +53,7 @@ export const createMatch: RequestHandler = async (
 
 export const getIntoMatch: RequestHandler = async (
   req: ExtendedRequest,
-  res: Response
+  res: Response,
 ) => {
   const schema = z.object({
     hash: z.number(),
@@ -81,7 +81,7 @@ export const getIntoMatch: RequestHandler = async (
     player2: userToken.data.id,
     hash: data.data.hash,
   };
-  const verifyInMatch = await isInTheMatch(newPlayer.player2);
+  const verifyInMatch = await isInTheMatch(newPlayer);
   if (verifyInMatch) {
     res.json({ err: "O usuário já está na partida" });
     console.log(verifyInMatch.player2);

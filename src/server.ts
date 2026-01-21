@@ -7,7 +7,14 @@ import cors from "cors";
 import { MatchesRoutes } from "./routes/matches";
 
 const server = express();
-server.use(cors());
+server.use(
+  cors({
+    origin: "http://localhost:3000", // A URL onde seu Next.js está rodando
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "Accept"], // Isso libera o Bearer!
+    credentials: true,
+  }),
+);
 server.use(cookieParser());
 server.use(bodyParser.urlencoded({ extended: true }));
 server.use(bodyParser.json());

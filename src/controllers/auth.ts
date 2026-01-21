@@ -63,7 +63,7 @@ export const login: RequestHandler = async (req, res) => {
   }
   const verifyPass = await bcrypt.compare(
     data.data.password,
-    userData.password
+    userData.password,
   );
   if (!verifyPass) {
     return res.status(401).json({ err: "nao autorizado, senha errada " });
@@ -76,7 +76,7 @@ export const login: RequestHandler = async (req, res) => {
   const token = await generateToken(tokenData);
   res.cookie("token", token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: false, //process.env.NODE_ENV === "production",
     maxAge: 3600000,
   });
   res.json({

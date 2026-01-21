@@ -38,9 +38,16 @@ export const getIntoMatchData = async (data: GetIntoMatchProps) => {
   });
 };
 
-export const isInTheMatch = async (id: number) => {
+type isInTheMatchProps = {
+  player2: number;
+  hash: number;
+};
+export const isInTheMatch = async (data: isInTheMatchProps) => {
   return await prisma.match.findFirst({
-    where: { OR: [{ player1: id }, { player2: id }] },
+    where: {
+      hash: data.hash.toString(),
+      OR: [{ player1: data.player2 }, { player2: data.player2 }],
+    },
   });
 };
 

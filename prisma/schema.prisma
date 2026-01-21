@@ -26,6 +26,10 @@ model Match {
   hash String
   winnerId Int?
   loserId Int?
+  iinnerIdBy1 Int?
+  winnerIdBy2 Int?
+  loserIdBy2 Int?
+
     player1 Int
     user1 User? @relation("Player1Relation",fields: [player1],references: [id])
     player2 Int? 
