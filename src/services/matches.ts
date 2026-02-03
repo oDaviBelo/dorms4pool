@@ -55,6 +55,7 @@ type setResultProps = {
   winner: number;
   second: number;
   hash: number;
+  status: boolean;
 };
 export const setResult = async (data: setResultProps) => {
   return await prisma.match.update({
@@ -62,10 +63,23 @@ export const setResult = async (data: setResultProps) => {
     data: {
       winnerId: data.winner,
       loserId: data.second,
+      status: data.status,
     },
     select: {
       winnerId: true,
       loserId: true,
+      status: true,
+    },
+  });
+};
+
+export const getMatchData = async (hash: number) => {
+  return await prisma.match.findFirst({
+    where: { id: hash },
+    select: {
+      player1: true,
+      player2: true,
+      status: true,
     },
   });
 };

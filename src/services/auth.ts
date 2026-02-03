@@ -47,14 +47,13 @@ export const loginUser = async (data: LoginUserProps) => {
   });
 };
 
-export const verifyUser = async (req: Request) => {
-  const { authorization } = req.headers;
-  if (authorization) {
-    const authSplit = authorization.split("Bearer ");
+export const verifyUser = async (token: string) => {
+  if (token) {
+    const authSplit = token.split("Bearer ");
     if (authSplit[1]) {
-      const payload = await verifyToken(authSplit[1]);
+      const payload = verifyToken(authSplit[1]);
       if (payload) {
-        const userEmail = (payload as TokenPayload).email;
+        const userEmail = payload.data.email;
         const user = await getUserByEmail(userEmail);
         if (user) return user;
       }

@@ -4,6 +4,7 @@ import {
   getMatchHash,
   isInTheMatch,
   setResult,
+  getMatchData,
 } from "../services/matches";
 import { id } from "zod/locales";
 import { Request, RequestHandler, Response } from "express";
@@ -17,9 +18,10 @@ export const createMatch: RequestHandler = async (
   req: ExtendedRequest,
   res,
 ) => {
-  const user = await req.headers.authorization;
+  const user = await req.cookies.token;
+
   if (!user) {
-    return;
+    return false;
   }
   const newUser = user.split("Bearer ");
   const userToken = verifyToken(newUser[1]);
@@ -33,7 +35,6 @@ export const createMatch: RequestHandler = async (
   }
   if (!userToken || userToken.data.id == null) {
     res.status(401).json({ err: "erro no id" });
-    console.log(userToken);
     return;
   }
   const firstMatchData = {
@@ -63,7 +64,7 @@ export const getIntoMatch: RequestHandler = async (
     return;
   }
 
-  const user = await req.headers.authorization;
+  const user = await req.cookies.token;
   if (!user) {
     return;
   }
@@ -84,7 +85,6 @@ export const getIntoMatch: RequestHandler = async (
   const verifyInMatch = await isInTheMatch(newPlayer);
   if (verifyInMatch) {
     res.json({ err: "O usuário já está na partida" });
-    console.log(verifyInMatch.player2);
     return;
   }
   if (userToken.data.id === undefined) {
@@ -107,17 +107,20 @@ export const setWinner: RequestHandler = async (req, res) => {
     winner: z.number(),
     second: z.number(),
     hash: z.string(),
+    status: z.boolean(),
   });
 
   const data = schema.safeParse(req.body);
+  console.log(req.body);
   if (!data.success) {
-    res.json({ err: "deu pau" });
+    res.json({ err: data.error });
     return;
   }
   const resultData = {
     winner: data.data.winner,
     second: data.data.second,
     hash: parseInt(data.data.hash),
+    status: data.data.status,
   };
   const setFinal = await setResult(resultData);
 
@@ -129,4 +132,26 @@ export const setWinner: RequestHandler = async (req, res) => {
   res.json({
     data: setFinal,
   });
+};
+
+export const getMatchUsers: RequestHandler = async (req, res) => {
+  const schema = z.object({
+    hash: z.string(),
+  });
+  const hash = schema.safeParse(req.query);
+  if (!hash.success) {
+    res.json({ err: "deu pau aqui" });
+    return;
+  }
+  const getMatchDataHash = {
+    hash: parseInt(hash.data.hash),
+  };
+  const data = await getMatchData(getMatchDataHash.hash);
+
+  if (!data) {
+    res.status(404).json("nao achou a partida no bd");
+    return;
+  }
+
+  res.status(200).json({ data });
 };

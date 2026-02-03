@@ -5,6 +5,8 @@ import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
 import cors from "cors";
 import { MatchesRoutes } from "./routes/matches";
+import { userRoutes } from "./routes/user";
+import { RankingRoutes } from "./routes/ranking";
 
 const server = express();
 server.use(
@@ -23,6 +25,8 @@ server.use(express.static("public"));
 server.use("/api", mainRouters);
 server.use("/api/auth", authRoutes);
 server.use("/api/match/", MatchesRoutes);
+server.use("/api/user/", userRoutes);
+server.use("/api/ranking/", RankingRoutes);
 
 server.listen(4444, () => {
   console.log("servidor rodando na 4444 ");

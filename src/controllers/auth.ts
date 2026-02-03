@@ -5,8 +5,9 @@ import { generateToken } from "../libs/jwt";
 import { ExtendedRequest } from "../types/extended-request";
 import bcrypt from "bcrypt";
 export const signup: RequestHandler = async (req, res) => {
+  console.log("chegou");
   const schema = z.object({
-    name: z.string(),
+    name: z.string().max(15),
     email: z.string().email(),
     password: z.string(),
   });
@@ -74,9 +75,11 @@ export const login: RequestHandler = async (req, res) => {
   };
 
   const token = await generateToken(tokenData);
-  res.cookie("token", token, {
+  res.cookie("token", `Bearer ${token}`, {
     httpOnly: true,
     secure: false, //process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
     maxAge: 3600000,
   });
   res.json({
