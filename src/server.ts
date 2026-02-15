@@ -7,6 +7,8 @@ import cors from "cors";
 import { MatchesRoutes } from "./routes/matches";
 import { userRoutes } from "./routes/user";
 import { RankingRoutes } from "./routes/ranking";
+console.log("DEBUG - DATABASE_URL:", process.env.DATABASE_URL);
+console.log("DEBUG - JWT_SECRET_KEY:", process.env.JWT_SECRET_KEY);
 
 const server = express();
 
