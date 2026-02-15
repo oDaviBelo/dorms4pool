@@ -4,4 +4,4 @@ import * as RankingController from "../controllers/ranking";
 
 export const RankingRoutes = Router();
 
-RankingRoutes.get("/getRanking", RankingController.getRankingController);
+RankingRoutes.get("/", RankingController.getRankingController);
