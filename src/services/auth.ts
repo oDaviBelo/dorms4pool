@@ -45,18 +45,23 @@ export const loginUser = async (data: LoginUserProps) => {
 
   return user;
 };
-
 export const verifyUser = async (token: string) => {
-  if (token) {
+  if (!token) return false;
+
+  // Tenta verificar o token direto (porque no Cookie ele vem sem "Bearer")
+  let payload = verifyToken(token);
+
+  // Se falhar, tenta o split (caso você ainda use Authorization Header em algum lugar)
+  if (!payload && token.includes("Bearer ")) {
     const authSplit = token.split("Bearer ");
-    if (authSplit[1]) {
-      const payload = verifyToken(authSplit[1]);
-      if (payload) {
-        const userEmail = payload.data.email;
-        const user = await getUserByEmail(userEmail);
-        if (user) return user;
-      }
-    }
+    payload = verifyToken(authSplit[1]);
   }
+
+  if (payload && payload.data) {
+    const userEmail = payload.data.email;
+    const user = await getUserByEmail(userEmail);
+    if (user) return user;
+  }
+
   return false;
 };
