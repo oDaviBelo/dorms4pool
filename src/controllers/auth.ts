@@ -105,7 +105,7 @@ export const login: RequestHandler = async (req, res) => {
       httpOnly: true,
       secure: true,
       sameSite: "none",
-      domain: ".dorms4pool.online",
+      //domain: ".dorms4pool.online",
       path: "/",
       maxAge: 3600000,
     });
