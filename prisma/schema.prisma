@@ -12,8 +12,13 @@ model User {
   id Int @id @default(autoincrement())
   status Boolean @default(true)
   name String
-  email String
+  username String @unique
+  email String @unique
   password String
+  morador Boolean
+  data DateTime 
+  triunfos Int @default(0)
+  derrotas Int @default(0)
   matchesAsPlayer1 Match[] @relation("Player1Relation")
   matchesAsPlayer2 Match[] @relation("Player2Relation")
 
@@ -26,15 +31,17 @@ model Match {
   hash String
   winnerId Int?
   loserId Int?
-  iinnerIdBy1 Int?
-  winnerIdBy2 Int?
-  loserIdBy2 Int?
+  username1 String?
+  username2 String?
+  data DateTime
+
+  
 
     player1 Int
     user1 User? @relation("Player1Relation",fields: [player1],references: [id])
     player2 Int? 
     user2 User? @relation("Player2Relation",fields: [player2],references: [id])
-
+    
   @@map("matches")
 }
 /// We could not retrieve columns for the underlying table. Either it has none or you are missing rights to see them. Please check your privileges.

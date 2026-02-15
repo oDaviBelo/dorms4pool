@@ -8,6 +8,8 @@ export const getUserByEmail = async (email: string) => {
       email: true,
       name: true,
       status: true,
+      derrotas: true,
+      triunfos: true,
     },
   });
 };

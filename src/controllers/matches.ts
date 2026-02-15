@@ -5,6 +5,7 @@ import {
   isInTheMatch,
   setResult,
   getMatchData,
+  getMatches,
 } from "../services/matches";
 import { id } from "zod/locales";
 import { Request, RequestHandler, Response } from "express";
@@ -40,9 +41,10 @@ export const createMatch: RequestHandler = async (
   const firstMatchData = {
     player1: userToken.data.id,
     hash: newHash.toString(),
+    data: new Date(),
   };
-
   const setMatchData = await createMatchData(firstMatchData);
+
   if (!setMatchData) {
     res
       .status(402)
@@ -154,4 +156,28 @@ export const getMatchUsers: RequestHandler = async (req, res) => {
   }
 
   res.status(200).json({ data });
+};
+
+export const getMyMatches: RequestHandler = async (
+  req: ExtendedRequest,
+  res,
+) => {
+  const user = await req.cookies.token;
+
+  if (!user) {
+    return res.json({
+      err: "sem cookies",
+    });
+  }
+  const newUser = user.split("Bearer ");
+  const userToken = await verifyToken(newUser[1]);
+  if (!userToken) {
+    return res.json({
+      err: "cookie invalido",
+    });
+  }
+  const data = await getMatches(userToken.data.id);
+  return res.json({
+    data: data,
+  });
 };

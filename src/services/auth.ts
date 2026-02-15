@@ -8,6 +8,9 @@ type CreateUserProps = {
   name: string;
   email: string;
   password: string;
+  morador: boolean;
+  username: string;
+  data: Date;
 };
 export const createUser = async (data: CreateUserProps) => {
   data.email = data.email.toLowerCase();

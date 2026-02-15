@@ -1,8 +1,8 @@
 import z, { int, number, set } from "zod";
 import { getMatchData } from "../services/matches";
 import { Request, RequestHandler, Response } from "express";
-import { getUsersByIds } from "../services/user";
-
+import { getUserByEmail, getUsersByIds } from "../services/user";
+import { verifyToken } from "../libs/jwt";
 export const getUsersById: RequestHandler = async (req, res) => {
   console.log("CHAMOU");
 
@@ -29,4 +29,28 @@ export const getUsersById: RequestHandler = async (req, res) => {
   }
 
   res.status(200).json({ data });
+};
+
+export const getUserByToken: RequestHandler = async (req, res) => {
+  const schema = z.string();
+  const result = schema.safeParse(req.cookies.token);
+  if (!result.success) {
+    return res.status(401).json({
+      error: result.error,
+    });
+  }
+  const token = result.data.split("Bearer ");
+  const decoded = await verifyToken(token[1]);
+  if (!decoded) {
+    return res.json({
+      error: "Erro inesperado",
+    });
+  }
+  const finalData = await getUserByEmail(decoded.data.email);
+  if (!finalData) {
+    return false;
+  }
+  res.json({
+    finalData,
+  });
 };

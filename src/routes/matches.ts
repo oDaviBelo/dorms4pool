@@ -11,3 +11,9 @@ MatchesRoutes.get(
   privateRoute,
   MatchController.getMatchUsers,
 );
+
+MatchesRoutes.get(
+  "/getMyMatches",
+
+  MatchController.getMyMatches,
+);

@@ -10,10 +10,14 @@ export const signup: RequestHandler = async (req, res) => {
     name: z.string().max(15),
     email: z.string().email(),
     password: z.string(),
+    morador: z.boolean(),
+    username: z.string(),
+    data: z.coerce.date(),
   });
   const data = schema.safeParse(req.body);
   if (!data.success) {
     res.json({ error: data.error.flatten().fieldErrors });
+    console.log(data.error);
     return;
   }
   const saltRounds = 10;
@@ -23,7 +27,7 @@ export const signup: RequestHandler = async (req, res) => {
   const newUser = await createUser(data.data);
 
   if (!newUser) {
-    res.json({ err: "Erro services" });
+    res.json({ err: newUser });
     return;
   }
 
