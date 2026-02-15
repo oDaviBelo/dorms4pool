@@ -5,50 +5,66 @@ import { generateToken } from "../libs/jwt";
 import { ExtendedRequest } from "../types/extended-request";
 import bcrypt from "bcrypt";
 export const signup: RequestHandler = async (req, res) => {
-  console.log("chegou");
+  console.log("Recebendo tentativa de cadastro...");
+
   const schema = z.object({
-    name: z.string().max(15),
+    name: z.string().min(2).max(15),
     email: z.string().email(),
-    password: z.string(),
+    password: z.string().min(6),
     morador: z.boolean(),
     username: z.string(),
     data: z.coerce.date(),
   });
-  const data = schema.safeParse(req.body);
-  if (!data.success) {
-    res.json({ error: data.error.flatten().fieldErrors });
-    console.log(data.error);
-    return;
-  }
-  const saltRounds = 10;
-  const hashedPassword = await bcrypt.hash(data.data.password, saltRounds);
-  console.log("newpass: ", hashedPassword);
-  data.data.password = hashedPassword;
-  const newUser = await createUser(data.data);
 
-  if (!newUser) {
-    res.json({ err: newUser });
-    return;
+  const parse = schema.safeParse(req.body);
+
+  if (!parse.success) {
+    console.log("Erro de validação Zod:", parse.error.flatten().fieldErrors);
+    return res.status(400).json({ error: parse.error.flatten().fieldErrors });
   }
 
-  const tokenData = {
-    email: newUser.email,
-    id: newUser.id,
-    name: newUser.name,
-  };
+  try {
+    const { email, password, name, morador, username, data } = parse.data;
 
-  const token = await generateToken(tokenData);
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-  res.json({
-    user: {
+    console.log("Iniciando criação no Prisma...");
+    const newUser = await createUser({
+      ...parse.data,
+      password: hashedPassword,
+    });
+
+    if (!newUser) {
+      return res
+        .status(500)
+        .json({ error: "Não foi possível criar o usuário." });
+    }
+
+    const tokenData = {
+      email: newUser.email,
       id: newUser.id,
       name: newUser.name,
-      password: newUser.password,
-    },
-    token: token,
-  });
-};
+    };
 
+    const token = await generateToken(tokenData);
+
+    return res.status(201).json({
+      user: {
+        id: newUser.id,
+        name: newUser.name,
+        email: newUser.email,
+      },
+      token,
+    });
+  } catch (error: any) {
+    console.error("ERRO NO PROCESSO DE SIGNUP:", error);
+    return res.status(500).json({
+      error: "Erro interno no servidor",
+      message: error.message,
+    });
+  }
+};
 export const login: RequestHandler = async (req, res) => {
   const schema = z.object({
     email: z.string(),
