@@ -32,25 +32,28 @@ export const getUsersById: RequestHandler = async (req, res) => {
 };
 
 export const getUserByToken: RequestHandler = async (req, res) => {
-  const schema = z.string();
-  const result = schema.safeParse(req.cookies.token);
-  if (!result.success) {
-    return res.status(401).json({
-      error: result.error,
-    });
+  const token = req.cookies.token;
+
+  if (!token) {
+    return res.status(401).json({ error: "Token não fornecido" });
   }
-  const token = result.data.split("Bearer ");
-  const decoded = await verifyToken(token[1]);
+
+  // Se o token vier com Bearer (headers), limpamos. Se vier puro (cookie), usamos direto.
+  const cleanToken = token.startsWith("Bearer ")
+    ? token.split("Bearer ")[1]
+    : token;
+
+  const decoded = await verifyToken(cleanToken);
+
   if (!decoded) {
-    return res.json({
-      error: "Erro inesperado",
-    });
+    return res.json({ error: "Erro inesperado" });
   }
+
   const finalData = await getUserByEmail(decoded.data.email);
+
   if (!finalData) {
-    return false;
+    return res.status(404).json({ error: "Usuário não encontrado" });
   }
-  res.json({
-    finalData,
-  });
+
+  res.json({ finalData });
 };
