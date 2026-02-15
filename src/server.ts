@@ -12,7 +12,11 @@ const server = express();
 
 server.use(
   cors({
-    origin: "*",
+    origin: [
+      "https://dorms4pool.online",
+      "https://www.dorms4pool.online",
+      "https://dorms4pool-front.vercel.app",
+    ],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "Accept"],
     credentials: true,
