@@ -67,50 +67,65 @@ export const signup: RequestHandler = async (req, res) => {
 };
 export const login: RequestHandler = async (req, res) => {
   const schema = z.object({
-    email: z.string(),
+    email: z.string().email(),
     password: z.string(),
   });
+
   const data = schema.safeParse(req.body);
 
   if (!data.success) {
-    res.json({ error: data.error.flatten().fieldErrors });
-    return;
+    return res.status(400).json({ error: data.error.flatten().fieldErrors });
   }
-  const userData = await loginUser(data.data);
-  console.log(userData);
-  if (!userData) {
-    res.status(401).json({ err: "Credenciais Inválidas" });
-    return;
-  }
-  const verifyPass = await bcrypt.compare(
-    data.data.password,
-    userData.password,
-  );
-  if (!verifyPass) {
-    return res.status(401).json({ err: "nao autorizado, senha errada " });
-  }
-  const tokenData = {
-    email: userData.email,
-    id: userData.id,
-  };
 
-  const token = await generateToken(tokenData);
-  res.cookie("token", `Bearer ${token}`, {
-    httpOnly: true,
-    secure: false, //process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    maxAge: 3600000,
-  });
-  res.json({
-    user: {
+  try {
+    const userData = await loginUser(data.data);
+
+    if (!userData) {
+      return res.status(401).json({ err: "Credenciais Inválidas" });
+    }
+
+    const verifyPass = await bcrypt.compare(
+      data.data.password,
+      userData.password,
+    );
+
+    if (!verifyPass) {
+      return res.status(401).json({ err: "E-mail ou senha incorretos" });
+    }
+
+    const tokenData = {
       email: userData.email,
-      password: userData.password,
-    },
-    token,
-  });
-};
+      id: userData.id,
+      name: userData.name,
+    };
 
+    const token = await generateToken(tokenData);
+
+    res.cookie("token", `Bearer ${token}`, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      path: "/",
+      maxAge: 3600000,
+    });
+
+    return res.json({
+      user: {
+        id: userData.id,
+        email: userData.email,
+        name: userData.name,
+        username: userData.username,
+        morador: userData.morador,
+      },
+      token,
+    });
+  } catch (error: any) {
+    return res.status(500).json({
+      error: "Erro interno no servidor",
+      message: error.message,
+    });
+  }
+};
 export const validate = (req: ExtendedRequest, res: Response) => {
   res.json({ user: req.user });
 };
