@@ -9,25 +9,35 @@ import { userRoutes } from "./routes/user";
 import { RankingRoutes } from "./routes/ranking";
 
 const server = express();
+
 server.use(
   cors({
-    origin: "http://localhost:3000", // A URL onde seu Next.js está rodando
+    origin: "*",
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization", "Accept"], // Isso libera o Bearer!
+    allowedHeaders: ["Content-Type", "Authorization", "Accept"],
     credentials: true,
   }),
 );
+
 server.use(cookieParser());
 server.use(bodyParser.urlencoded({ extended: true }));
 server.use(bodyParser.json());
 
 server.use(express.static("public"));
+
 server.use("/api", mainRouters);
 server.use("/api/auth", authRoutes);
 server.use("/api/match/", MatchesRoutes);
 server.use("/api/user/", userRoutes);
 server.use("/api/ranking/", RankingRoutes);
 
-server.listen(4444, () => {
-  console.log("servidor rodando na 4444 ");
+server.get("/ping", (req, res) => {
+  res.json({ pong: true, message: "Dorms4Pool API está online!" });
+});
+
+const PORT = 3000;
+const HOST = "0.0.0.0";
+
+server.listen(PORT, HOST, () => {
+  console.log(`🚀 Servidor Dorms4Pool rodando em http://${HOST}:${PORT}`);
 });
