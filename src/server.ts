@@ -11,6 +11,7 @@ console.log("DEBUG - DATABASE_URL:", process.env.DATABASE_URL);
 console.log("DEBUG - JWT_SECRET_KEY:", process.env.JWT_SECRET_KEY);
 
 const server = express();
+server.set("trust proxy", 1);
 
 server.use(
   cors({
