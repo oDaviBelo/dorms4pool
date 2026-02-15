@@ -31,9 +31,9 @@ server.use(express.static("public"));
 
 server.use("/api", mainRouters);
 server.use("/api/auth", authRoutes);
-server.use("/api/match/", MatchesRoutes);
-server.use("/api/user/", userRoutes);
-server.use("/api/ranking/", RankingRoutes);
+server.use("/api/match", MatchesRoutes);
+server.use("/api/user", userRoutes);
+server.use("/api/ranking", RankingRoutes);
 
 server.get("/ping", (req, res) => {
   res.json({ pong: true, message: "Dorms4Pool API está online!" });
