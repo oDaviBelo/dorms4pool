@@ -30,24 +30,20 @@ type LoginUserProps = {
 };
 
 export const loginUser = async (data: LoginUserProps) => {
-  data.email = data.email.toLowerCase();
-  console.log("email no services:", data.email);
-  const exists = await prisma.user.findFirst({
+  const emailLower = data.email.toLowerCase();
+  console.log("email no services:", emailLower);
+
+  const user = await prisma.user.findFirst({
     where: {
-      email: data.email,
+      email: emailLower,
     },
   });
-  if (!exists) {
+
+  if (!user) {
     return false;
   }
-  return await prisma.user.findFirst({
-    where: { email: data.email },
-    select: {
-      email: true,
-      password: true,
-      id: true,
-    },
-  });
+
+  return user;
 };
 
 export const verifyUser = async (token: string) => {
