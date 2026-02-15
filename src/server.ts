@@ -12,25 +12,11 @@ const server = express();
 
 server.use(
   cors({
-    origin: (origin, callback) => {
-      const allowedOrigins = [
-        "https://dorms4pool.online",
-        "https://www.dorms4pool.online",
-        "https://dorms4pool-front.vercel.app",
-      ];
-      if (
-        !origin ||
-        allowedOrigins.includes(origin) ||
-        origin.endsWith(".vercel.app")
-      ) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
+    origin: ["https://dorms4pool.online", "https://www.dorms4pool.online"],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "Accept"],
     credentials: true,
+    optionsSuccessStatus: 204,
   }),
 );
 
