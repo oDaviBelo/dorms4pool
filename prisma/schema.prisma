@@ -1,0 +1,49 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+model User {
+  id Int @id @default(autoincrement())
+  status Boolean @default(true)
+  name String
+  username String @unique
+  email String @unique
+  password String
+  morador Boolean
+  data DateTime 
+  triunfos Int @default(0)
+  derrotas Int @default(0)
+  matchesAsPlayer1 Match[] @relation("Player1Relation")
+  matchesAsPlayer2 Match[] @relation("Player2Relation")
+
+  @@map("users")
+}
+
+model Match {
+  id Int @id @default(autoincrement())
+  status Boolean @default(false)
+  hash String
+  winnerId Int?
+  loserId Int?
+  username1 String?
+  username2 String?
+  data DateTime
+
+  
+
+    player1 Int
+    user1 User? @relation("Player1Relation",fields: [player1],references: [id])
+    player2 Int? 
+    user2 User? @relation("Player2Relation",fields: [player2],references: [id])
+    
+  @@map("matches")
+}
+/// We could not retrieve columns for the underlying table. Either it has none or you are missing rights to see them. Please check your privileges.
+// model users {
+// }
