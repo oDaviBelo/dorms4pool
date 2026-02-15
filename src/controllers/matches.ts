@@ -24,8 +24,7 @@ export const createMatch: RequestHandler = async (
   if (!user) {
     return false;
   }
-  const newUser = user.split("Bearer ");
-  const userToken = verifyToken(newUser[1]);
+  const userToken = verifyToken(user);
   let hash = await getMatchHash();
   let hashDefault = 1;
   let newHash = 0;
@@ -70,8 +69,7 @@ export const getIntoMatch: RequestHandler = async (
   if (!user) {
     return;
   }
-  const newUser = user.split("Bearer ");
-  const userToken = await verifyToken(newUser[1]);
+  const userToken = await verifyToken(user);
 
   if (!data) {
     res.status(401).json({ err: "pau no controller" });
@@ -169,8 +167,7 @@ export const getMyMatches: RequestHandler = async (
       err: "sem cookies",
     });
   }
-  const newUser = user.split("Bearer ");
-  const userToken = await verifyToken(newUser[1]);
+  const userToken = await verifyToken(user);
   if (!userToken) {
     return res.json({
       err: "cookie invalido",
