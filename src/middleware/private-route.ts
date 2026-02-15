@@ -6,14 +6,10 @@ export const privateRoute = async (
   res: Response,
   next: NextFunction,
 ) => {
-  let token = req.cookies.token;
+  const token = req.cookies.token;
 
   if (!token) {
     return res.status(401).json({ err: "Token não fornecido" });
-  }
-
-  if (token.startsWith("Bearer ")) {
-    token = token.split(" ")[1];
   }
 
   try {
@@ -28,6 +24,8 @@ export const privateRoute = async (
     req.user = user;
     next();
   } catch (error) {
-    return res.status(401).json({ err: "Erro na validação do acesso" });
+    return res
+      .status(401)
+      .json({ err: "Token inválido ou usuário inexistente" });
   }
 };
