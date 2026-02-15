@@ -7,4 +7,13 @@ export const authRoutes = Router();
 authRoutes.post("/signup", authController.signup);
 authRoutes.post("/login", authController.login);
 authRoutes.post("/validate", privateRoute, authController.validate);
-//fix middleware and route/me
+authRoutes.post("/logout", (req, res) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+    domain: ".dorms4pool.online",
+    path: "/",
+  });
+  return res.json({ success: true });
+});
