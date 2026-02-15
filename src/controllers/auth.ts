@@ -101,10 +101,11 @@ export const login: RequestHandler = async (req, res) => {
 
     const token = await generateToken(tokenData);
 
-    res.cookie("token", `Bearer ${token}`, {
+    res.cookie("token", token, {
       httpOnly: true,
       secure: true,
       sameSite: "none",
+      domain: ".dorms4pool.online",
       path: "/",
       maxAge: 3600000,
     });
